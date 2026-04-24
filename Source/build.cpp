@@ -130,12 +130,11 @@ CEXEBuild::CEXEBuild(signed char pponly, bool warnaserror) :
   definedlist.add(_T("NSIS_PACKEDVERSION"), NSIS_PACKEDVERSION);
 
   m_target_type=TARGET_X86UNICODE;
-#ifdef _WIN32
-  if (sizeof(void*) > 4) m_target_type = TARGET_AMD64; // BUGBUG: scons 'TARGET_ARCH' should specify the default
-#endif
-#ifdef _M_ARM64
-  m_target_type = TARGET_ARM64; // BUGBUG: scons 'TARGET_ARCH' should specify the default
-#endif
+  TCHAR buf[42];
+  wsprintf(buf, _T("%") NPRIns _T("-unicode"), NSIS_DEFAULT_TARGET_ARCH);
+  for (UINT tt = TARGETFIRST; tt < TARGETCOUNT; ++tt)
+    if (!_tcsicmp(buf, get_target_suffix((TARGETTYPE)tt)))
+      m_target_type=(TARGETTYPE)tt;
   build_unicode=TARGET_X86ANSI != m_target_type;
   build_lockedunicodetarget=false;
 
